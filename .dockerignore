@@ -1,0 +1,7 @@
+.git
+.gradle
+build
+chart
+docs
+*.md
+notas de arquitectura
