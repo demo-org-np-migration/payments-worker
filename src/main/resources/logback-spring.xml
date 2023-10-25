@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- JSON a stdout, un objeto por línea (las convenciones internas de API: level, msg, service, env, trace_id). -->
+<configuration>
+    <springProperty name="serviceName" source="spring.application.name" defaultValue="payments-worker"/>
+    <springProperty name="env" source="ENV" defaultValue="staging"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <fieldNames>
+                <level>level</level>
+                <message>msg</message>
+                <thread>[ignore]</thread>
+                <levelValue>[ignore]</levelValue>
+            </fieldNames>
+            <customFields>{"service":"${serviceName}","env":"${env}"}</customFields>
+            <includeMdcKeyName>trace_id</includeMdcKeyName>
+        </encoder>
+    </appender>
+
+    <root level="${LOG_LEVEL:-INFO}">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
