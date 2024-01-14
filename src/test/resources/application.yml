@@ -1,0 +1,14 @@
+# Solo para tests: H2 en modo PostgreSQL con el esquema creado por Hibernate a partir de las
+# entidades (no por Flyway). En runtime real `ddl-auto` sigue siendo `none` (application.yml
+# principal); esto es una conveniencia de test, no un cambio de contrato.
+spring:
+  datasource:
+    url: jdbc:h2:mem:settlements-test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  flyway:
+    enabled: false
