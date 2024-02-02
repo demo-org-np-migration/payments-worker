@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.cauri.payments.worker.events.PaymentCompletedEvent
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -31,6 +32,9 @@ class KafkaConfig(
     @Bean
     fun kafkaObjectMapper(): ObjectMapper =
         ObjectMapper()
+            // Sin el módulo de Kotlin, Jackson no ve los nombres de los parámetros del constructor
+            // de un data class y falla con "has no property name annotation" al deserializar.
+            .registerKotlinModule()
             .registerModule(JavaTimeModule())
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
