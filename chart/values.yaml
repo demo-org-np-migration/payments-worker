@@ -1,0 +1,64 @@
+# Defaults de staging. Los values de staging/prod "de verdad" viven en el repo gitops
+# (apps/payments-worker/values-<env>.yaml); build.yml bumpea image.tag ahí en cada push a main
+# (y values-prod.yaml al taggear v*). Este archivo es lo que Argo CD usa como base del chart.
+
+image:
+  repository: ghcr.io/demo-org-np-migration/payments-worker
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 384Mi
+  limits:
+    cpu: "1"
+    memory: 768Mi
+
+probes:
+  path: /actuator/health
+  initialDelaySeconds: 20
+  periodSeconds: 10
+
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  path: /actuator/prometheus
+
+# Variables de entorno no sensibles (las convenciones internas de API, #2 y spec payments-worker). Van a un
+# ConfigMap y se montan con envFrom. Lo sensible (credenciales de Postgres y AWS) NUNCA entra
+# acá: sale de los Secrets `postgres-credentials` y `aws-credentials`.
+env:
+  SERVICE_NAME: payments-worker
+  ENV: staging
+  PORT: "8080"
+  LOG_LEVEL: INFO
+  DB_HOST: postgres.staging.svc
+  DB_NAME: payments
+  KAFKA_BOOTSTRAP: kafka.platform.svc:9092
+  KAFKA_TOPIC_PREFIX: staging.
+  AWS_ENDPOINT_URL: http://localstack.platform.svc:4566
+  AWS_REGION: us-east-1
+  SQS_QUEUE_PREFIX: staging-
+  JAVA_TOOL_OPTIONS: "-XX:MaxRAMPercentage=70"
+
+secrets:
+  postgres:
+    name: postgres-credentials
+    usernameKey: username
+    passwordKey: password
+  aws:
+    name: aws-credentials
+    accessKeyIdKey: AWS_ACCESS_KEY_ID
+    secretAccessKeyKey: AWS_SECRET_ACCESS_KEY
+
+podLabels: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

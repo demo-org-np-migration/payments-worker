@@ -1,0 +1,6 @@
+apiVersion: v2
+name: payments-worker
+description: Consume payments.completed, registra el settlement y encola la notificación al cliente (Cauri, equipo payments).
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
