@@ -36,6 +36,14 @@ sequenceDiagram
     end
 ```
 
+## Base de datos
+
+`payments` es la base de payments-api, no nuestra: nosotros solo somos dueños de la tabla
+`settlements` ahí adentro. Por eso corremos Flyway con historia propia (`flyway_schema_history_worker`,
+ver `application.yml`) en vez de la default — si compartiéramos `flyway_schema_history` con
+payments-api, el segundo servicio en arrancar contra esa base moriría con
+`FlywayValidateException` (Flyway ve el mismo `V1` con otro checksum y lo trata como corrupción).
+
 ## Idempotencia
 
 `settlements.payment_id` es `unique`. Antes de insertar, `SettlementService` chequea si ya existe;

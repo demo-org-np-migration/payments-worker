@@ -16,6 +16,11 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+    # `payments` es la base de payments-api, no nuestra: comparte flyway_schema_history con
+    # nosotros por default y valida las dos secuencias de migraciones como si fueran una sola
+    # (mismo V1, checksum distinto) => el segundo en arrancar muere con FlywayValidateException.
+    # Historia propia para no invadir la de payments-api.
+    table: flyway_schema_history_worker
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
 
