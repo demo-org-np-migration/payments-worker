@@ -43,6 +43,9 @@ sequenceDiagram
 ver `application.yml`) en vez de la default — si compartiéramos `flyway_schema_history` con
 payments-api, el segundo servicio en arrancar contra esa base moriría con
 `FlywayValidateException` (Flyway ve el mismo `V1` con otro checksum y lo trata como corrupción).
+Con historia propia, la primera vez arrancamos contra un schema que ya tiene las tablas de
+payments-api pero no nuestra `flyway_schema_history_worker`: por eso `baseline-on-migrate: true`,
+que nos permite crear nuestra historia y aplicar `V1__settlements` sin tocar nada ajeno.
 
 ## Idempotencia
 

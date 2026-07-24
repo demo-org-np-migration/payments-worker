@@ -21,6 +21,12 @@ spring:
     # (mismo V1, checksum distinto) => el segundo en arrancar muere con FlywayValidateException.
     # Historia propia para no invadir la de payments-api.
     table: flyway_schema_history_worker
+    # Con historia propia, la primera vez que corremos acá el schema "public" ya no está vacío
+    # (payments-api ya creó sus tablas) pero flyway_schema_history_worker todavía no existe: sin
+    # esto Flyway rechaza migrar con "Found non-empty schema(s) but no schema history table".
+    # baseline-on-migrate crea nuestra propia historia con baseline 0 y aplica V1 encima; no toca
+    # nada de lo que ya existe (nuestro V1 usa IF NOT EXISTS).
+    baseline-on-migrate: true
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
 
