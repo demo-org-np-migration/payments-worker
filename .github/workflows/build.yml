@@ -64,8 +64,10 @@ jobs:
           git config user.email "cauri-bot@cauri.io"
           git add apps/payments-worker/values-staging.yaml
           git commit -m "chore(payments-worker): staging ${SHA_TAG}"
-          git push
-
+          for _ in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then break; fi
+            sleep $((RANDOM % 5 + 2))
+          done
   update-gitops-prod:
     needs: build-and-push
     if: startsWith(github.ref, 'refs/tags/v')
@@ -91,4 +93,7 @@ jobs:
           git config user.email "cauri-bot@cauri.io"
           git add apps/payments-worker/values-prod.yaml
           git commit -m "chore(payments-worker): prod ${SHA_TAG}"
-          git push
+          for _ in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then break; fi
+            sleep $((RANDOM % 5 + 2))
+          done
